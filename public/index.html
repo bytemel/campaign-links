@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Campaign Links: which channel brought your applicants</title>
+  <meta name="description" content="One short link per channel (WhatsApp, LinkedIn, posters, email) with honest click counts. Link previews are counted apart, so the numbers mean people. Free, no sign-up, built on Neon Postgres.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232a4fa8'/%3E%3Cpath d='M9 22V16M14 22V11M19 22V14M24 22V8' fill='none' stroke='%23fff' stroke-width='2.8' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/app.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <div class="wrap">
+      <p class="crumb"><a href="/">Campaign Links</a></p>
+      <h1 id="title">Which channel brought your applicants?</h1>
+      <p class="lead" id="lead">One short link per channel. Post the WhatsApp link in WhatsApp, the poster QR on the poster. The counts tell you where people came from, with link previews taken out.</p>
+    </div>
+  </header>
+
+  <main id="main" class="wrap">
+    <p id="status" class="notice" role="status" hidden></p>
+
+    <section id="home" hidden>
+      <div class="pair">
+        <div class="card">
+          <h2>Try it</h2>
+          <p>The demo campaign has six channel links. Open one and watch the count move. It started with sample clicks, marked as such.</p>
+          <a class="btn btn-primary" href="/s/demo">Open the demo stats</a>
+        </div>
+        <form class="card field-stack" id="create">
+          <h2>Make your own</h2>
+          <div class="field"><label for="c-name">Campaign name</label><input id="c-name" name="name" type="text" maxlength="80" required placeholder="Cohort 5 applications"></div>
+          <div class="field"><label for="c-dest">Where people should land</label><input id="c-dest" name="destination" type="url" required placeholder="https://yourhub.org/apply"></div>
+          <fieldset class="channels"><legend>Channels</legend><div id="channel-boxes" class="checks"></div></fieldset>
+          <button class="btn btn-primary" type="submit">Make links</button>
+          <p class="hint">No sign-up. You get a private stats link. Links on this free demo last 30 days.</p>
+        </form>
+      </div>
+      <section class="card">
+        <h2>Why not one link for everything?</h2>
+        <p>One link tells you how many people clicked, not where they were. A link per channel answers the question a programme team argues about every intake: was it the WhatsApp blast, the LinkedIn post or the posters?</p>
+        <p>Click counters also lie. Paste a link in a WhatsApp group and WhatsApp's servers fetch it to draw the preview. LinkedIn, Slack and X do the same. Those fetches are counted here as previews, never as people.</p>
+        <p class="hint">Each link adds <code>utm_source</code>, <code>utm_medium</code> and <code>utm_campaign</code>, so Google Analytics or your form tool sees the channel too.</p>
+      </section>
+    </section>
+
+    <section id="stats" hidden>
+      <div class="tiles">
+        <div class="tile"><span class="tile-label">People</span><span class="tile-value" id="t-people">0</span><span class="tile-sub" id="t-people-sub"></span></div>
+        <div class="tile"><span class="tile-label">Top channel</span><span class="tile-value tile-text" id="t-top">None yet</span><span class="tile-sub" id="t-top-sub"></span></div>
+        <div class="tile"><span class="tile-label">On a phone</span><span class="tile-value" id="t-phone">0%</span><span class="tile-sub">of people</span></div>
+        <div class="tile"><span class="tile-label">Previews left out</span><span class="tile-value" id="t-previews">0</span><span class="tile-sub">WhatsApp, LinkedIn and other bots</span></div>
+      </div>
+      <div class="pair">
+        <section class="card" aria-labelledby="by-h">
+          <h2 id="by-h">People by channel</h2>
+          <ul class="bars" id="bars"></ul>
+        </section>
+        <section class="card" aria-labelledby="day-h">
+          <h2 id="day-h">People per day, last 14 days</h2>
+          <div id="days" class="days"></div>
+          <p class="hint" id="days-hint"></p>
+        </section>
+      </div>
+      <section class="card" aria-labelledby="links-h">
+        <div class="head-row"><h2 id="links-h">Your links</h2><span class="hint" id="expires"></span></div>
+        <div class="table-scroll">
+          <table class="links">
+            <thead><tr><th scope="col">Channel</th><th scope="col">Short link</th><th scope="col"><span class="visually-hidden">Actions</span></th></tr></thead>
+            <tbody id="link-rows"></tbody>
+          </table>
+        </div>
+        <p class="hint">Lands on <span id="dest"></span></p>
+      </section>
+      <section class="card" id="private-card" hidden>
+        <h2>Your private stats link</h2>
+        <p class="hint">Keep it. It is the only way back to these numbers.</p>
+        <div class="copy-row"><input id="stats-link" type="text" readonly aria-label="Private stats link"><button class="btn" type="button" data-copy="stats-link">Copy</button></div>
+      </section>
+    </section>
+
+    <dialog id="qr-dialog" aria-labelledby="qr-h">
+      <h2 id="qr-h">QR code</h2>
+      <div id="qr" class="qr"></div>
+      <p class="hint" id="qr-link"></p>
+      <div class="actions"><a class="btn btn-primary" id="qr-download" download="campaign-qr.svg">Download SVG</a><button class="btn" type="button" id="qr-close">Close</button></div>
+    </dialog>
+  </main>
+
+  <footer class="wrap foot">
+    <p>Open source: <a href="https://github.com/bytemel/campaign-links">github.com/bytemel/campaign-links</a>. Built by <a href="https://timmwangi.com">Timothy Mwangi</a>.</p>
+  </footer>
+</body>
+</html>
