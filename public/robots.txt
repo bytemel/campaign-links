@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://campaign-links-theta.vercel.app/sitemap.xml
